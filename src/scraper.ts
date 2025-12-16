@@ -175,12 +175,34 @@ export class ChildcareScraper {
     const isDisabled = (await nextButton.first().getAttribute('aria-disabled')) === 'true';
     if (isDisabled || (await nextButton.first().isDisabled())) return false;
     const previousUrl = this.page.url();
-    await nextButton.first().click();
-    await this.page.waitForTimeout(500);
-    await this.page.waitForSelector('table');
+    const rows = this.page.locator('table tbody tr');
+    const previousFirstRow = (await rows.count()) > 0 ? await rows.first().textContent() : undefined;
+
+    await Promise.all([
+      this.page.waitForLoadState('domcontentloaded'),
+      nextButton.first().click()
+    ]);
+
+    await this.page.waitForSelector('table tbody tr');
+
+    try {
+      await this.page.waitForFunction(
+        ([selector, previous]) => {
+          const firstRow = document.querySelector(`${selector} tbody tr`);
+          const text = firstRow?.textContent?.trim();
+          return previous ? text && text !== previous.trim() : Boolean(text);
+        },
+        ['table', previousFirstRow],
+        { timeout: 5000 }
+      );
+    } catch (err) {
+      // If content did not change, assume we are at the last page.
+      return false;
+    }
+
     await delay(this.options.delayMs);
     const newUrl = this.page.url();
-    return newUrl !== previousUrl;
+    return newUrl !== previousUrl || (await rows.first().textContent()) !== previousFirstRow;
   }
 
   private async gotoPage(target: number) {

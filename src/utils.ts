@@ -41,7 +41,9 @@ export function normalizeList(value?: string | null): string | undefined {
 }
 
 export function uniqueKey(provider: ProviderRecord): string {
-  return `${provider.name.toLowerCase()}|${provider.address.toLowerCase()}`;
+  const name = normalizeWhitespace(provider.name)?.toLowerCase() ?? '';
+  const address = normalizeWhitespace(provider.address)?.toLowerCase() ?? '';
+  return `${name}|${address}`;
 }
 
 export function ensureDir(dir: string) {
