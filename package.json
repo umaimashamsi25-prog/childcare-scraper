@@ -1,0 +1,23 @@
+{
+  "name": "childcare-scraper",
+  "version": "1.0.0",
+  "description": "Ontario childcare provider scraper using Playwright",
+  "main": "dist/index.js",
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc",
+    "start": "ts-node src/cli.ts",
+    "scrape": "ts-node src/cli.ts"
+  },
+  "dependencies": {
+    "playwright": "^1.45.0",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "@types/yargs": "^17.0.32",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
+  },
+  "license": "MIT"
+}
